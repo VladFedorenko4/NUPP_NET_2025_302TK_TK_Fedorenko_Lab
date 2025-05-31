@@ -21,7 +21,7 @@ namespace Tourist.Console
                 .ConfigureServices((context, services) =>
                 {
                     services.AddDbContext<TouristContext>(options =>
-                        options.UseNpgsql("Host=localhost; Database=Tourist; Username=postgres; Password=3004"));
+                        options.UseNpgsql("Host=localhost; Database=Tourist; Username=postgres; Password=postgres"));
 
                     services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
                     services.AddTransient(typeof(ICrudService<>), typeof(CrudService<>));
