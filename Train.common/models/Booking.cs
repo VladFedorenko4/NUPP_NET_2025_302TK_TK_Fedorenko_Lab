@@ -1,17 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Tourist.common.services;
+﻿using Tourist.Common.Services;
 
-namespace Tourist.common.models
+namespace Tourist.Common.Models
 {
     public class Booking : IIdentifiable
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid Id { get; set; }
+
         public string MovieTitle { get; set; }
+
         public DateTime ShowTime { get; set; }
+
         public double Price { get; set; }
 
         public Booking(string movieTitle, DateTime showTime, double price)

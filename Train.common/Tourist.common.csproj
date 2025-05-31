@@ -4,7 +4,11 @@
     <OutputType>Library</OutputType>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tourist.Infrastructure\Tourist.Infrastructure.csproj" />
+  </ItemGroup>
 
 </Project>

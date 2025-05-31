@@ -1,66 +1,53 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Tourist.Infrastructure.Repository;
 
-namespace Tourist.common.services
+namespace Tourist.Common.Services
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Text.Json;
-    using System.IO;
+    public class CrudService<T> : ICrudService<T> where T : class, IIdentifiable
+    {
+        private readonly IRepository<T> _repository;
 
-    
-    
-        public class CrudService<T> : ICrudService<T> where T : IIdentifiable
+        public CrudService(IRepository<T> repository)
         {
-            private readonly List<T> _items = new();
+            _repository = repository;
+        }
 
-            public void Create(T element) => _items.Add(element);
+        public async Task<bool> CreateAsync(T element)
+        {
+            await _repository.AddAsync(element);
+            return await SaveAsync();
+        }
 
-            public T? Read(Guid id) => _items.FirstOrDefault(e => e.Id == id);
+        public async Task<T> ReadAsync(Guid id)
+        {
+            return await _repository.GetByIdAsync(id);
+        }
 
-            public IEnumerable<T> ReadAll() => _items;
+        public async Task<IEnumerable<T>> ReadAllAsync()
+        {
+            return await _repository.GetAllAsync();
+        }
 
-            public void Update(T element)
-            {
-                var index = _items.FindIndex(e => e.Id == element.Id);
-                if (index != -1)
-                    _items[index] = element;
-            }
+        public async Task<IEnumerable<T>> ReadAllAsync(int page, int amount)
+        {
+            return await _repository.GetAllAsync(page, amount);
+        }
 
-            public void Remove(T element)
-            {
-                _items.RemoveAll(e => e.Id == element.Id);
-            }
+        public async Task<bool> UpdateAsync(T element)
+        {
+            await Task.Run(() => _repository.Update(element));
+            return await SaveAsync();
+        }
 
+        public async Task<bool> RemoveAsync(T element)
+        {
+            await Task.Run(() => _repository.Delete(element));
+            return await SaveAsync();
+        }
 
-            public void Save(string filePath)
-            {
-                var json = JsonSerializer.Serialize(_items, new JsonSerializerOptions
-                {
-                    WriteIndented = true
-                });
-                File.WriteAllText(filePath, json);
-            }
-
-            public void Load(string filePath)
-            {
-                if (!File.Exists(filePath)) return;
-
-                var json = File.ReadAllText(filePath);
-                var loaded = JsonSerializer.Deserialize<List<T>>(json);
-
-                if (loaded != null)
-                {
-                    _items.Clear();
-                    _items.AddRange(loaded);
-                }
-            }
+        public async Task<bool> SaveAsync()
+        {
+            return await _repository.SaveAsync();
         }
     }
+}
 

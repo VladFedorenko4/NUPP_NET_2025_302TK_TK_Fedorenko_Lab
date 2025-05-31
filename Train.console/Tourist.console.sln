@@ -1,11 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35818.85 d17.13
+VisualStudioVersion = 17.13.35818.85
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tourist.console", "Tourist.console.csproj", "{286B6D8E-1961-42FB-A61C-1530A36BCF6A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tourist.Console", "Tourist.Console.csproj", "{286B6D8E-1961-42FB-A61C-1530A36BCF6A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tourist.common", "..\Train.common\Tourist.common.csproj", "{BC346939-CC43-4817-8B7C-32042A6A4D04}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tourist.Common", "..\Train.Common\Tourist.Common.csproj", "{BC346939-CC43-4817-8B7C-32042A6A4D04}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tourist.Infrastructure", "..\Tourist.Infrastructure\Tourist.Infrastructure.csproj", "{B10D55E9-9FF9-4940-B9F3-21C18AC38172}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tourist.Nosql", "..\Tourist.Nosql\Tourist.Nosql.csproj", "{9FC2D2BD-4E09-4222-BC48-4EDD11E4D932}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,14 @@ Global
 		{BC346939-CC43-4817-8B7C-32042A6A4D04}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC346939-CC43-4817-8B7C-32042A6A4D04}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BC346939-CC43-4817-8B7C-32042A6A4D04}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B10D55E9-9FF9-4940-B9F3-21C18AC38172}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B10D55E9-9FF9-4940-B9F3-21C18AC38172}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B10D55E9-9FF9-4940-B9F3-21C18AC38172}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B10D55E9-9FF9-4940-B9F3-21C18AC38172}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9FC2D2BD-4E09-4222-BC48-4EDD11E4D932}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FC2D2BD-4E09-4222-BC48-4EDD11E4D932}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FC2D2BD-4E09-4222-BC48-4EDD11E4D932}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FC2D2BD-4E09-4222-BC48-4EDD11E4D932}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,84 +1,88 @@
-﻿using Tourist.common;
-using System;
-using System.Collections.Generic;
-using System.Net.Sockets;
-using Tourist.common.models;
-using Tourist.common.services;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Tourist.Common.Services;
+using Tourist.Infrastructure;
+using Tourist.Infrastructure.Models;
+using Tourist.Infrastructure.Repository;
+using Tourist.Nosql;
 
 namespace Tourist.Console
 {
     internal class Program
     {
-        public delegate void TicketAddedHandler(Booking ticket);
-        public static event TicketAddedHandler? OnTicketAdded;
-        static void Main(string[] args)
+        public delegate void TicketAddedHandler(BookingModel ticket);
+        public static event TicketAddedHandler OnTicketAdded;
+
+        static async Task Main(string[] args)
         {
             System.Console.OutputEncoding = System.Text.Encoding.UTF8;
+            var host = Host.CreateDefaultBuilder(args)
+                .ConfigureServices((context, services) =>
+                {
+                    services.AddDbContext<TouristContext>(options =>
+                        options.UseNpgsql("Host=localhost; Database=Tourist; Username=postgres; Password=3004"));
 
-            var movieService = new CrudService<TourPackage>();
+                    services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
+                    services.AddTransient(typeof(ICrudService<>), typeof(CrudService<>));
+                })
+                .Build();
 
-            movieService.Create(new TourPackage("Турція", "Стамбул", 2025, 7.6));
-            movieService.Create(new TourPackage("Франція", "Париж", 2025, 8.2));
-            movieService.Create(new TourPackage("Італія", "Рим", 2025, 7));
-            movieService.Create(new TourPackage("Іспанія", "Мадрид", 2025, 8));
-            movieService.Create(new TourPackage("Таїланд", "Бангкок", 2025, 6));
-            movieService.Create(new TourPackage("Велика Британія", "Лондон", 2025, 8));
+            using var scope = host.Services.CreateScope();
+            var services = scope.ServiceProvider;
 
-            string filePath = "movies.json";
+            var tourPackageService = services.GetRequiredService<ICrudService<TourPackageModel>>();
 
-            movieService.Save(filePath);
-            System.Console.WriteLine($"\nДані збережено у файл: {filePath}");
+            await tourPackageService.CreateAsync(new TourPackageModel("Турція", "Стамбул", 2025, 7.6));
+            await tourPackageService.CreateAsync(new TourPackageModel("Франція", "Париж", 2025, 8.2));
+            await tourPackageService.CreateAsync(new TourPackageModel("Італія", "Рим", 2025, 7));
+            await tourPackageService.CreateAsync(new TourPackageModel("Іспанія", "Мадрид", 2025, 8));
+            await tourPackageService.CreateAsync(new TourPackageModel("Таїланд", "Бангкок", 2025, 6));
+            await tourPackageService.CreateAsync(new TourPackageModel("Велика Британія", "Лондон", 2025, 8));
 
-            System.Console.WriteLine("\nПісля очищення:");
-            var emptyService = new CrudService<TourPackage>();
-            foreach (var m in emptyService.ReadAll())
-            {
-                System.Console.WriteLine(m);
-            }
-
-            emptyService.Load(filePath);
-            System.Console.WriteLine("\nПісля завантаження з файлу:");
-            foreach (var m in emptyService.ReadAll())
-            {
-                System.Console.WriteLine(m);
-            }
-
+            await tourPackageService.SaveAsync();
+            System.Console.WriteLine($"Дані збережено у базу даних");
 
             System.Console.WriteLine("Список фільмів\n");
 
-            foreach (var movie in movieService.ReadAll())
+            foreach (var i in await tourPackageService.ReadAllAsync())
             {
-                System.Console.WriteLine(movie);
+                System.Console.WriteLine($"{i.Id}, {i.Title}, {i.Genre}, {i.Year}, {i.Rating}");
             }
-            List<Booking> Bookings = new List<Booking>();
 
-            OnTicketAdded += Booking =>
+            OnTicketAdded += t =>
             {
-                System.Console.WriteLine($"\nДодано новий квиток: {Booking}");
+                System.Console.WriteLine($"\nДодано новий квиток: {t.Id}, {t.MovieTitle}, {t.ShowTime}, {t.Price}");
             };
 
-            AddTicket(Bookings, new Booking("Турція", DateTime.Now.AddHours(2), 120));
-            AddTicket(Bookings, new Booking("Франція", DateTime.Now.AddHours(3), 100));
-            AddTicket(Bookings, new Booking("Італія", DateTime.Now.AddHours(4), 170));
-            AddTicket(Bookings, new Booking("Іспанія", DateTime.Now.AddHours(4), 190));
-            AddTicket(Bookings, new Booking("Таїланд", DateTime.Now.AddHours(4), 90));
-            AddTicket(Bookings, new Booking("Велика Британія", DateTime.Now.AddHours(4), 134));
+            var bookingService = services.GetRequiredService<ICrudService<BookingModel>>();
+            await AddTicketAsync(bookingService, new BookingModel("Турція", DateTime.Now.AddHours(2), 120));
+            await AddTicketAsync(bookingService, new BookingModel("Франція", DateTime.Now.AddHours(3), 100));
+            await AddTicketAsync(bookingService, new BookingModel("Італія", DateTime.Now.AddHours(4), 170));
+            await AddTicketAsync(bookingService, new BookingModel("Іспанія", DateTime.Now.AddHours(4), 190));
+            await AddTicketAsync(bookingService, new BookingModel("Таїланд", DateTime.Now.AddHours(4), 90));
+            await AddTicketAsync(bookingService, new BookingModel("Велика Британія", DateTime.Now.AddHours(4), 134));
 
             System.Console.WriteLine("\nСписок квитків:\n");
-            foreach (var ticket in Bookings)
+            var bookings = await bookingService.ReadAllAsync();
+
+            foreach (var t in bookings)
             {
-                System.Console.WriteLine(ticket);
+                System.Console.WriteLine($"{t.Id}, {t.MovieTitle}, {t.ShowTime}, {t.Price}");
             }
 
-            System.Console.WriteLine($"\nЗагальна сума продажів: {Bookings.CalculateTotalPrice()} EUR");
+            System.Console.WriteLine($"\nЗагальна сума продажів: {bookings.CalculateTotalPrice()} EUR");
+
+            var noSqlService = new NoSqlService();
+            await noSqlService.DemostrateAsync();
 
             System.Console.ReadLine();
         }
-        public static void AddTicket(List<Booking> tickets, Booking newTicket)
+
+        private static async Task AddTicketAsync(ICrudService<BookingModel> bookingService, BookingModel newTicket)
         {
-            tickets.Add(newTicket);
+            await bookingService.CreateAsync(newTicket);
             OnTicketAdded?.Invoke(newTicket);
         }
     }
-
 }

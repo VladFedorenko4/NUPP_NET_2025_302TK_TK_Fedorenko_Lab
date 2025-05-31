@@ -1,8 +1,8 @@
 ﻿using Tourist.Common.Services;
 
-namespace Tourist.Common.Models
+namespace Tourist.Infrastructure.Models
 {
-    public class TourPackage : IIdentifiable
+    public class TourPackageModel : IIdentifiable
     {
         public Guid Id { get; set; }
 
@@ -14,17 +14,17 @@ namespace Tourist.Common.Models
 
         public double Rating { get; set; }
 
-        public TourPackage(string title, string genre, int year, double rating)
+
+        public TourPackageModel()
+        {
+        }
+
+        public TourPackageModel(string title, string genre, int year, double rating)
         {
             Title = title;
             Genre = genre;
             Year = year;
             Rating = rating;
-        }
-
-        public override string ToString()
-        {
-            return $"{Title} ({Year}) - {Genre}, Рейтинг: {Rating}/10";
         }
     }
 }
